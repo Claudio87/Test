@@ -1,2 +1,4 @@
+<meta charset="utf-8">
+
 print("Hello Шпрот")
 print("Парулик Hello")
