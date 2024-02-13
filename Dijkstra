@@ -1,0 +1,46 @@
+Map<String, Map<String,Double>> storage = new HashMap<>();
+        Map<String,Double> book = new HashMap<>();
+        book.put("Plate",5.0);
+        book.put("Poster", 0.0);
+        storage.put("Book",book);
+        Map<String,Double> plate = new HashMap<>();
+        plate.put("Guitar",15.0);
+        plate.put("Drum",20.0);
+        storage.put("Plate",plate);
+        Map<String,Double> poster = new HashMap<>();
+        poster.put("Guitar",30.0);
+        poster.put("Drum",35.0);
+        storage.put("Poster",poster);
+        Map<String,Double> guitar = new HashMap<>();
+        guitar.put("Piano",40.0);
+        storage.put("Guitar",guitar);
+        Map<String,Double> drum = new HashMap<>();
+        drum.put("Piano",10.0);
+        storage.put("Drum",drum);
+//        storage.put("book", (Map<String, Double>) new HashMap<>().put("plate",5.0));
+        
+        Queue<String> parents = new LinkedList<>();
+        Map<String, Map<String,Double>> result = new HashMap<>();
+        String currentParent = "Book";
+        parents.add(currentParent);
+        Map<String, Double> currentMap;
+        
+        while(parents.size() != 0){
+            currentMap = storage.get(currentParent);
+            double value = 0.0;
+            Iterator<String> it = currentMap.keySet().iterator();
+            while(it.hasNext()){
+                String child = it.next();
+                value = currentMap.get(child);
+                // object in result and currentParent are not the same. Seems like by the time we've got object differs from Book 
+                // the result Map doesn't contain the object we are trying to refer to
+                if(!currentParent.equals("Book")){
+                    value += result.get(currentParent).get(child);
+                }
+                result.put(child, (Map<String, Double>) new HashMap<>().put(currentParent, value));
+                if(!child.equals("Piano")){
+                    parents.add(child);
+                }
+            }
+            currentParent = parents.remove();
+        }
