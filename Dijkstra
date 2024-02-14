@@ -1,4 +1,11 @@
-Map<String, Map<String,Double>> storage = new HashMap<>();
+// Online Java Compiler
+// Use this editor to write, compile and run your Java code online
+import java.util.*;
+class HelloWorld {
+    static Map<String, Map<String,Double>> storage = new HashMap<>();
+    static Queue<String> parents = new LinkedList<>();
+    static Map<String, Map<String,Double>> result = new HashMap<>();
+    public HelloWorld(){
         Map<String,Double> book = new HashMap<>();
         book.put("Plate",5.0);
         book.put("Poster", 0.0);
@@ -17,30 +24,52 @@ Map<String, Map<String,Double>> storage = new HashMap<>();
         Map<String,Double> drum = new HashMap<>();
         drum.put("Piano",10.0);
         storage.put("Drum",drum);
-//        storage.put("book", (Map<String, Double>) new HashMap<>().put("plate",5.0));
-        
-        Queue<String> parents = new LinkedList<>();
-        Map<String, Map<String,Double>> result = new HashMap<>();
+    }
+    public static void main(String[] args) {
+       
+        HelloWorld hw = new HelloWorld();
         String currentParent = "Book";
         parents.add(currentParent);
         Map<String, Double> currentMap;
-        
+        String parentPointerPrev;
         while(parents.size() != 0){
+            print();
+            parentPointerPrev = currentParent;
+            currentParent = parents.remove();
+             System.out.println("Parent: "+currentParent+"\n");
+             System.out.println("PrevParent: "+parentPointerPrev+"\n");
             currentMap = storage.get(currentParent);
             double value = 0.0;
             Iterator<String> it = currentMap.keySet().iterator();
             while(it.hasNext()){
                 String child = it.next();
                 value = currentMap.get(child);
+                System.out.println("Child: "+child);
                 // object in result and currentParent are not the same. Seems like by the time we've got object differs from Book 
                 // the result Map doesn't contain the object we are trying to refer to
                 if(!currentParent.equals("Book")){
-                    value += result.get(currentParent).get(child);
+                    value += result.get(currentParent).get(parentPointerPrev);
                 }
-                result.put(child, (Map<String, Double>) new HashMap<>().put(currentParent, value));
+                Map<String, Double> bufferMap = new HashMap<>();
+                bufferMap.put(currentParent, value);
+                result.put(child, bufferMap);
                 if(!child.equals("Piano")){
                     parents.add(child);
                 }
             }
-            currentParent = parents.remove();
+            
         }
+    }
+    
+    public static void print(){
+        System.out.println(result);
+    }
+}
+
+
+       
+//        storage.put("book", (Map<String, Double>) new HashMap<>().put("plate",5.0));
+        
+        
+        
+        
