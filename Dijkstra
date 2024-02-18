@@ -97,7 +97,48 @@ class HelloWorld {
         System.out.println(processed);
     }
 }
+//new
+ public void testStart(){
+        Deque<String> parents = new LinkedList<>();
+        String currentParent = "Book";
+        parents.add(currentParent);
+        int index = 0;
+        while(index != 8){
+            currentParent = parents.getFirst();
+            System.out.println("currentParent: "+currentParent);
+            Map<String, Double> map = storage.get(currentParent);
+            Iterator<String> iterator = map.keySet().iterator();
+            while(iterator.hasNext()){
+                String child = iterator.next();
+                double value = map.get(child);
+                if(currentParent.equals("Book")){
+                    parParents.put(child,currentParent);
+                    costs.put(child, value);
+                }
+                else if(!parParents.containsKey(child)){
+                    parParents.put(child, currentParent);
+                    value += costs.get(currentParent);
+                    costs.put(child,value);
+                }
+                else if(value < costs.get(child)){
+                    costs.put(child,value);
+                    parParents.put(child,currentParent);
+                }
+                parents.pollFirst();
+                if(child.equals("Piano")){
+                    child = "Book";
+                }
+                parents.add(child);
+            }
+            index++;
+        }
+        System.out.println(costs);
+        System.out.println("----------------");
+        System.out.println(parParents);
+    }
 
+
+//end new
 
        
 //        storage.put("book", (Map<String, Double>) new HashMap<>().put("plate",5.0));
