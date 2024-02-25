@@ -101,42 +101,44 @@ class HelloWorld {
  public void testStart(){
         Deque<String> parents = new LinkedList<>();
         String currentParent = "Book";
+        costs.put(currentParent,0.0);
         parents.add(currentParent);
         int index = 0;
-        while(index != 8){
+        String child ="";
+        while(index != 5){
             currentParent = parents.getFirst();
-            System.out.println("currentParent: "+currentParent);
             Map<String, Double> map = storage.get(currentParent);
             Iterator<String> iterator = map.keySet().iterator();
             while(iterator.hasNext()){
-                String child = iterator.next();
+                child = iterator.next();
                 double value = map.get(child);
-                if(currentParent.equals("Book")){
-                    parParents.put(child,currentParent);
-                    costs.put(child, value);
+                String str = child+" - "+currentParent;
+                if(!processedParentsSet.contains(str)) {
+                    processedParentsSet.add(str);
                 }
-                else if(!parParents.containsKey(child)){
-                    parParents.put(child, currentParent);
-                    value += costs.get(currentParent);
+                value += costs.get(currentParent);
+                System.out.println("curParent: " + currentParent+ " - child: "+child+" - value: " +value );
+                if(costs.containsKey(child)){
+                    if(costs.get(child) > value){
+                        costs.put(child,value);
+                    }
+                }
+                else{
                     costs.put(child,value);
                 }
-                else if(value < costs.get(child)){
-                    costs.put(child,value);
-                    parParents.put(child,currentParent);
-                }
-                parents.pollFirst();
+
                 if(child.equals("Piano")){
                     child = "Book";
                 }
                 parents.add(child);
             }
+            parents.pollFirst();
             index++;
         }
         System.out.println(costs);
         System.out.println("----------------");
-        System.out.println(parParents);
+        System.out.println(processedParentsSet);
     }
-
 
 //end new
 
