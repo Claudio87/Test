@@ -98,47 +98,91 @@ class HelloWorld {
     }
 }
 //new
- public void testStart(){
-        Deque<String> parents = new LinkedList<>();
-        String currentParent = "Book";
-        costs.put(currentParent,0.0);
-        parents.add(currentParent);
-        int index = 0;
-        String child ="";
-        while(index != 5){
-            currentParent = parents.getFirst();
-            Map<String, Double> map = storage.get(currentParent);
-            Iterator<String> iterator = map.keySet().iterator();
+ import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+public class ChangePiano_ver2 {
+    private Map<String, Map<String,Double>> graph = new HashMap<>();
+    private Map<String,Double> destinationMap = new HashMap<>();
+    private Map<String,String> parentsMap = new HashMap<>();
+
+    private Map<String,Double> settledNodes = new HashMap<>();
+    private Map<String, Map<String,Double>> unsettledNodes = new HashMap<>();
+
+    public ChangePiano_ver2() {
+        Map<String,Double> book = new HashMap<>();
+        book.put("Plate",5.0);
+        book.put("Poster", 0.0);
+        graph.put("Book",book);
+        Map<String,Double> plate = new HashMap<>();
+        plate.put("Guitar",15.0);
+        plate.put("Drum",20.0);
+        graph.put("Plate",plate);
+        Map<String,Double> poster = new HashMap<>();
+        poster.put("Guitar",30.0);
+        poster.put("Drum",35.0);
+        graph.put("Poster",poster);
+        Map<String,Double> guitar = new HashMap<>();
+        guitar.put("Piano",20.0);
+        graph.put("Guitar",guitar);
+        Map<String,Double> drum = new HashMap<>();
+        drum.put("Piano",10.0);
+        graph.put("Drum",drum);
+
+        Iterator<String>  iterator = graph.keySet().iterator();
+        while(iterator.hasNext()){
+            Map<String,Double> map = graph.get(iterator.next());
+            map.keySet().forEach(k-> destinationMap.put(k,Double.POSITIVE_INFINITY));
+        }
+    }
+
+    public void startDijkstra(){
+        //final customization
+        Map<String,Double> book = new HashMap<>();
+        book.put("Plate",5.0);
+        book.put("Poster", 0.0);
+        unsettledNodes.put("Book",book);
+        destinationMap.put("Book", 0.0);
+        //end final customization
+        Map<String,Double> currentNode = null;
+        while(unsettledNodes.size() != 0){
+            Iterator<String> iterator = unsettledNodes.keySet().iterator();
+            Double currentDestination = Double.POSITIVE_INFINITY;
             while(iterator.hasNext()){
-                child = iterator.next();
-                double value = map.get(child);
-                String str = child+" - "+currentParent;
-                if(!processedParentsSet.contains(str)) {
-                    processedParentsSet.add(str);
+                String key = iterator.next();
+                if(destinationMap.get(key) < currentDestination){
+                    currentDestination = destinationMap.get(key);
+                    currentNode = new HashMap<>();
+                    currentNode.put(key,currentDestination);
                 }
-                value += costs.get(currentParent);
-                System.out.println("curParent: " + currentParent+ " - child: "+child+" - value: " +value );
-                if(costs.containsKey(child)){
-                    if(costs.get(child) > value){
-                        costs.put(child,value);
+            }
+            String nodeKey = currentNode.keySet().iterator().next();
+            Double nodeDestination = currentNode.get(nodeKey);
+            unsettledNodes.remove(nodeKey);
+            if(!settledNodes.containsKey(nodeKey) & !nodeKey.equals("Piano")){
+                Iterator<String> it = graph.get(nodeKey).keySet().iterator();
+                while(it.hasNext()){
+                    String adjacentKey = it.next();
+                    if(nodeDestination + graph.get(nodeKey).get(adjacentKey) < destinationMap.get(adjacentKey)){
+                        Double destination = nodeDestination + graph.get(nodeKey).get(adjacentKey);
+                        destinationMap.put(adjacentKey,destination);
+                        parentsMap.put(adjacentKey,nodeKey);
+                        unsettledNodes.put(adjacentKey,graph.get(adjacentKey));
                     }
                 }
-                else{
-                    costs.put(child,value);
-                }
 
-                if(child.equals("Piano")){
-                    child = "Book";
-                }
-                parents.add(child);
+                settledNodes.put(nodeKey,nodeDestination);
             }
-            parents.pollFirst();
-            index++;
+            System.out.println("ParentsMap: ");
+            System.out.println(parentsMap);
         }
-        System.out.println(costs);
-        System.out.println("----------------");
-        System.out.println(processedParentsSet);
+//        System.out.println(settledNodes);
+//        System.out.println(storageDestination);
+
+
     }
+}
 
 //end new
 
